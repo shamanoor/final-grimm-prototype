@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Wraiter</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body id="page-top">
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand custom-sidebar-bg  align-items-center topbar mb-4 static-top shadow">
+
+          <div class="mx-auto">
+            <img id="ghglogo" src="img/ghg.png"/>
+            LABs
+          </div>
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Content Row -->
+          <div class="row">
+            <div class="col-lg-2">
+            </div>
+            <div class="col-lg-8 text-center">
+                <div class="input-group text-center mb-4">
+                  <input type="text" id="prompt" class="form-control" placeholder="Write your story prompt here ..." aria-describedby="basic-addon2">
+                  <div class="input-group-append">
+                    <button id="complete-button" class="btn btn-warning">Generate text</button>
+                  </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+            </div>
+
+            <!-- First Column: Text -->
+            <div class="col-lg-2">
+            </div>
+            <div class="col-lg-5">
+
+              <!-- Custom Text Color Utilities -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Main Story</h6>
+                </div>
+                <div class="card-body">
+                  <p style="font-weight:normal" id="prd1.1-prediction"></p>
+                  <div class="text-center">
+                        <button id="append2" class="btn btn-primary">Add paragraph to story</button>
+                    </div>
+                </div>
+              </div>
+
+            </div>
+
+           <!-- Second Column: Image -->
+            <div class="col-lg-3">
+              <!-- TODO REPLACE LINE BELOW BY ADDING PADDING TO BUTTON -->
+              <div class="card shadow mb-4">
+
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Generate images from keyword</TTI></h6>
+                </div>
+                <div class="card-body">
+
+                <div class="input-group mb-3">
+                  <input type="text" id="search_tti" class="form-control" placeholder="Search image" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                  <div class="input-group-append">
+                    <button onclick="GetPhoto()" class="btn btn-warning">Search</button>
+                  </div>
+                </div>
+
+
+                 <div id="tti" class="mb-4">
+                   </div>
+                     <div class="text-center">
+                    <button id="append2-img" class="btn btn-primary mb-4">Add image to story</button>
+                 </div>
+
+                 <button type="button" class="collapsible btn btn-warning"><p>Keyword suggestions</p></button>
+                  <div class="content">
+                  <div class="row-img mb-4">
+                    <div class="column-img">
+                      <img src="https://api.deepai.org/job-view-file/860d4b20-1f6d-472a-a80f-5654bae11f49/outputs/output.jpg">
+                      <img src="https://api.deepai.org/job-view-file/8ec6c0d9-0f40-4270-88c6-46d0b6396ba4/outputs/output.jpg">
+                    </div>
+                    <div class="column-img">
+                      <img src="https://api.deepai.org/job-view-file/12afb024-e911-4661-85eb-037bdd452f53/outputs/output.jpg">
+                      <img src="">
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-2">
+            </div>
+
+            <!-- First Column: Text -->
+            <div class="col-lg-2">
+            </div>
+            <div class="col-lg-5">
+                <!-- Custom Text Color Utilities -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Story</h6>
+                </div>
+                <div class="card-body">
+                    <div id="container" contenteditable="true"></div>
+                     </div>
+                  <button id="export" class="btn-primary">Download story (txt file)</button>
+                  <button id="exportpdf" class="btn-primary">Download story (reportlab PDF)</button>
+
+                </div>
+              </div>
+
+          </div>
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+      <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright &copy; LABs Wraiter 2019</span>
+          </div>
+        </div>
+      </footer>
+      <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Logout Modal-->
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="login.html">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.min.js"></script>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.deepai.org/deepai.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="js/script.js?v=2"></script>
+
+</body>
+
+</html>

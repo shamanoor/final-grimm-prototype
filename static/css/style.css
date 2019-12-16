@@ -1,0 +1,112 @@
+*{
+    font-size:20px;
+}
+
+img {
+   width: 100%;
+   height: 100%;
+   padding: 5px;
+}
+
+.content.img {
+   width: 50%;
+   height: 50%;
+   padding: 5px;
+}
+
+.btn-lg {
+  height: 7rem;
+  width: 7rem;
+}
+
+.sidebar-logo {
+    width: 50%;
+    height: 50%;
+}
+
+.custom-navbar-bg {
+    background-color: #6300A9;
+}
+
+.custom-sidebar-bg {
+    background-color: #6300A9;
+}
+
+#ghglogo {
+    width: 20%;
+    height: 20%;
+}
+
+/*Below for filter for image thing thing */
+/* Style the button that is used to open and close the collapsible content */
+.collapsible {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .collapsible:hover {
+  background-color: #ccc;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.collapsible:after {
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
+
+/* layout */
+.row-img {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+/* Create two equal columns that sits next to each other */
+.column-img {
+  flex: 50%;
+  padding: 0 0px;
+}
+
+.column-img img {
+  margin-top: 8px;
+  vertical-align: middle;
+  height: 50%;
+}
