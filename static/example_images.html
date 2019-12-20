@@ -47,101 +47,61 @@
 
           <!-- Content Row -->
           <div class="row">
-            <div class="col-lg-2">
-            </div>
-            <div class="col-lg-8 text-center">
-                <div class="input-group text-center mb-4">
-                  <input type="text" id="prompt" class="form-control" placeholder="Write your story prompt here ..." aria-describedby="basic-addon2">
-                  <div class="input-group-append">
-                    <button id="complete-button" class="btn btn-warning">Generate text</button>
-                  </div>
-                </div>
-            </div>
-            <div class="col-lg-2">
-            </div>
-
             <!-- First Column: Text -->
             <div class="col-lg-2">
             </div>
-            <div class="col-lg-5">
+            <div class="col-lg-8">
 
               <!-- Custom Text Color Utilities -->
               <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                  <h6 class="m-0 font-weight-bold text-primary">Main Story</h6>
+                  <h6 class="m-0 font-weight-bold text-primary">Example generated images per keyword</h6>
                 </div>
                 <div class="card-body">
-                  <p style="font-weight:normal" id="prd1.1-prediction"></p>
-                  <div class="text-center">
-                        <button id="append2" class="btn btn-primary">Add paragraph to story</button>
+<!--                    ADD IMAGES HERE -->
+                    <div class="row">
+                        <div class="col-2">
+                            <img src="img/examples/abacus.jpg"/>
+                        </div>
+                        <div class="col-2">
+                            <img src="img/examples/abaya.jpg"/>
+                        </div>
+                        <div class="col-2">
+                            <img src="img/examples/academic_gown.jpg"/>
+                        </div>
+                        <div class="col-2">
+                            <img src="img/examples/accordion.jpg"/>
+                        </div>
+                            <div class="col-2">
+                            <img src="img/examples/acorn.jpg"/>
+                        </div>
+                            <div class="col-2">
+                            <img src="img/examples/acorn_squash.jpg"/>
+                        </div>
+                        <div class="col-2">
+                            abacus
+                        </div>
+                        <div class="col-2">
+                            abaya
+                        </div>
+                        <div class="col-2">
+                            academic gown
+                        </div>
+                        <div class="col-2">
+                            accordion
+                        </div>
+                            <div class="col-2">
+                            acorn
+                        </div>
+                            <div class="col-2">
+                            acorn squash
+                        </div>
                     </div>
-                </div>
-              </div>
-
-            </div>
-
-           <!-- Second Column: Image -->
-            <div class="col-lg-3">
-              <!-- TODO REPLACE LINE BELOW BY ADDING PADDING TO BUTTON -->
-              <div class="card shadow mb-4">
-              <!-- Scrollable menu -->
-
-                <div class="card-header py-3">
-                  <h6 class="m-0 font-weight-bold text-primary">Generate images from keyword</TTI></h6>
-                </div>
-
-                <div class="card-body">
-
-                <div class="input-group">
-                  <input type="text" id="search_tti" class="form-control selector"  placeholder="Press space for keywords" aria-label="Recipient's username" aria-describedby="basic-addon2">
-
-                  <div class="input-group-append">
-                    <button onclick="GeneratePhoto()" id="generate-img" class="btn btn-warning">Search</button>
-                  </div>
-                </div>
-                 <div id="tti" class="mb-4">
-                 </div>
-                 <div class="text-center">
-                    <button id="append2-img" class="btn btn-primary mb-4">Add image to story</button>
-                 </div>
-
-                  <a href="example_images.html" target="_blank">Examples of generated images per keyword</a>
-                  <div class="content">
-                  <div class="row-img mb-4">
-                    <div class="column-img">
-                      <img src="https://api.deepai.org/job-view-file/860d4b20-1f6d-472a-a80f-5654bae11f49/outputs/output.jpg">
-                      <img src="https://api.deepai.org/job-view-file/8ec6c0d9-0f40-4270-88c6-46d0b6396ba4/outputs/output.jpg">
-                    </div>
-                    <div class="column-img">
-                      <img src="https://api.deepai.org/job-view-file/12afb024-e911-4661-85eb-037bdd452f53/outputs/output.jpg">
-                      <img src="">
-                    </div>
-                  </div>
-                  </div>
                 </div>
               </div>
             </div>
             <div class="col-lg-2">
             </div>
-
-            <!-- First Column: Text -->
-            <div class="col-lg-2">
-            </div>
-            <div class="col-lg-5">
-                <!-- Custom Text Color Utilities -->
-              <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                  <h6 class="m-0 font-weight-bold text-primary">Story</h6>
-                </div>
-                <div class="card-body">
-                    <div id="container" contenteditable="true"></div>
-                     </div>
-                  <button id="export" class="btn-primary">Download story (txt file)</button>
-                  <button id="exportpdf" class="btn-primary">Download story (reportlab PDF)</button>
-
-                </div>
-              </div>
-
           </div>
         </div>
         <!-- /.container-fluid -->
