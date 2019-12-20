@@ -1,13 +1,10 @@
 from io import BytesIO
-import paralleldots
-import fire
 import json
 import os
 import numpy as np
 import tensorflow as tf
 import model, sample, encoder
 from flask import Flask, request, jsonify, make_response
-import requests
 
 # USAGE via CLI:
 # set FLASK_APP=modelvgg16_grimm.py
@@ -32,102 +29,6 @@ def predict():
 @app.route("/write_cond", methods=["post"])
 def write_cond():
     return ""
-
-@app.route("/sample_model", methods=["post"])
-def sample_model(
-    model_name='Grimm',
-    seed=None,
-    nsamples=1,
-    batch_size=1,
-    length=200,
-    temperature=1,
-    top_k=0,
-    top_p=0.0
-):
-    """
-    Run the sample_model
-    :model_name=117M : String, which model to use
-    :seed=None : Integer seed for random number generators, fix seed to
-     reproduce results
-    :nsamples=0 : Number of samples to return, if 0, continues to
-     generate samples indefinately.
-    :batch_size=1 : Number of batches (only affects speed/memory).
-    :length=None : Number of tokens in generated text, if None (default), is
-     determined by model hyperparameters
-    :temperature=1 : Float value controlling randomness in boltzmann
-     distribution. Lower temperature results in less random completions. As the
-     temperature approaches zero, the model will become deterministic and
-     repetitive. Higher temperature results in more random completions.
-    :top_k=0 : Integer value controlling diversity. 1 means only 1 word is
-     considered for each step (token), resulting in deterministic completions,
-     while 40 means 40 words are considered at each step. 0 (default) is a
-     special setting meaning no restrictions. 40 generally is a good value.
-    :top_p=0.0 : Float value controlling diversity. Implements nucleus sampling,
-     overriding top_k if set to a value > 0. A good setting is 0.9.
-    """
-    enc = encoder.get_encoder(model_name)
-    hparams = model.default_hparams()
-    with open(os.path.join('models', model_name, 'hparams.json')) as f:
-        hparams.override_from_dict(json.load(f))
-
-    if length is None:
-        length = hparams.n_ctx
-    elif length > hparams.n_ctx:
-        raise ValueError("Can't get samples longer than window size: %s" % hparams.n_ctx)
-
-    with tf.Session(graph=tf.Graph()) as sess:
-        np.random.seed(seed)
-        tf.set_random_seed(seed)
-
-        output = sample.sample_sequence(
-            hparams=hparams, length=length,
-            start_token=enc.encoder['<|endoftext|>'],
-            batch_size=batch_size,
-            temperature=temperature, top_k=top_k, top_p=top_p
-        )[:, 1:]
-
-        saver = tf.train.Saver()
-        ckpt = tf.train.latest_checkpoint(os.path.join('models', model_name))
-        saver.restore(sess, ckpt)
-
-        generated = 0
-        while nsamples == 0 or generated < nsamples:
-            out = sess.run(output)
-            for i in range(batch_size):
-                generated += batch_size
-                text = enc.decode(out[i])
-                print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
-                print("Generated text: ", text)
-
-
-        # connect to paralleldots API for keyword extraction
-        # paralleldots.set_api_key('22oBWnyRjZbEzU1H8tKpoLmIkSZXTnAuPV8EP8gwzaI')
-        # keywords_dict = paralleldots.batch_keywords([text])
-        # print("keywords: ", keywords_dict)
-        # print("type of keywords: ", type(keywords_dict))
-        #
-        # keywords = []
-        # for idx in range(len(keywords_dict['keywords'][0])):
-        #     keywords.append(keywords_dict['keywords'][0][idx]['keyword'])
-        #
-        # keywords_deepai = requests.post(
-        #     "https://api.deepai.org/api/text-tagging",
-        #     data={
-        #         'text': text,
-        #     },
-        #     headers={'api-key': '9ceb784c-0739-41d9-93a2-f3a9d19af543'}
-        # )
-        # print("keywords_deepai.json() : ", keywords_deepai.json())
-        # keywords_deepai = keywords_deepai.json()
-        # keywords_deepai = keywords_deepai['output'].split('\n')
-
-        response = {
-            'text': text,
-            'keywords1': 'hi',
-            'keywords2' : 'hi',
-        }
-
-        return jsonify(response)
 
 @app.route("/get_prompt", methods=["get", "post"])
 def get_prompt():
@@ -217,33 +118,10 @@ def interact_model(
                     print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
                     print(text)
 
-                    # connect to paralleldots API for keyword extraction
-                    paralleldots.set_api_key('22oBWnyRjZbEzU1H8tKpoLmIkSZXTnAuPV8EP8gwzaI')
-                    keywords_dict = paralleldots.batch_keywords([text])
-                    print("keywords: ", keywords_dict)
-                    print("type of keywords: ", type(keywords_dict))
-
-                    keywords = []
-                    for idx in range(len(keywords_dict['keywords'][0])):
-                        keywords.append(keywords_dict['keywords'][0][idx]['keyword'])
-
-                    # deepai request
-                    keywords_deepai = requests.post(
-                        "https://api.deepai.org/api/text-tagging",
-                        data={
-                            'text': text,
-                        },
-                        headers={'api-key': '9ceb784c-0739-41d9-93a2-f3a9d19af543'}
-                    )
-                    print("keywords_deepai.json() : ", keywords_deepai.json())
-                    keywords_deepai = keywords_deepai.json()
-                    keywords_deepai = keywords_deepai['output'].split('\n')
-
                     response = {
                         'text': text,
-                        'keywords1': keywords,
-                        'keywords2': keywords_deepai,
                     }
+
                     return response
 
 ########################################################################################################################
@@ -261,6 +139,7 @@ from reportlab.pdfbase.pdfmetrics import registerFontFamily
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.platypus.flowables import DocAssign, Image, PageBreak
+from reportlab.platypus.flowables import Image as reportlab_image
 
 
 def get_img_indices(content):
@@ -320,7 +199,9 @@ def main():
     start_img, end_img = get_img_indices(content)
     txt_indices = get_txt_indices(start_img, end_img, content)
 
-    content = re.sub('<br>', '', content)
+    # temporary test of empty line at start of file
+    print("type of content: ", type(content))
+    content = content.strip()
 
     imgs = []
     txts = []
@@ -378,7 +259,7 @@ def generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg):
 
     image_url_idx = [m.start() for m in re.finditer('"', img)]
     url_mainpage = img[image_url_idx[0] + 1: image_url_idx[1]]
-    img = Image(url_mainpage, width=3 * inch, height=3 * inch)
+    img = reportlab_image(url_mainpage, width=3 * inch, height=3 * inch)
 
     story.append(img)
     story.append(PageBreak())
@@ -399,7 +280,7 @@ def generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg):
             print("img: ", img)
             image_url_idx = [m.start() for m in re.finditer('"', img)]
             url = img[image_url_idx[0] + 1: image_url_idx[1]]
-            img = Image(url, width=3 * inch, height=3 * inch)
+            img = reportlab_image(url, width=3 * inch, height=3 * inch)
             lastimg = False
         else:
             lastimg = True
@@ -437,12 +318,59 @@ def generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg):
 
     return buff.getvalue()
 
-# print("hey")
-#     doctitle = "heyyy.pdf"
-#     doc = SimpleDocTemplate(doctitle)
-#     doc.build(story)
-#     shutil.copy(doctitle, 'static/'+doctitle)
-#
-#     return doctitle
+########################################################################################################################
+########################################################################################################################
+############################################ EVERYTHING FOR TF BIGGAN HUB ##### ########################################
+########################################################################################################################
+########################################################################################################################
 
-import shutil
+import torch
+from pytorch_pretrained_biggan import (BigGAN, one_hot_from_names, truncated_noise_sample,
+                                       save_as_images)
+import base64
+from io import BytesIO
+
+# OPTIONAL: if you want to have more information on what's happening, activate the logger as follows
+from PIL import Image
+
+@app.route("/generate_image", methods=["post"])
+def generate_image():
+
+    keyword = request.get_json()
+    keyword = keyword['keyword']
+    # Load pre-trained model tokenizer (vocabulary)
+    model = BigGAN.from_pretrained('biggan-deep-512')
+
+    # Prepare a input
+    truncation = 0.4
+    class_vector = one_hot_from_names([keyword], batch_size=1)
+    noise_vector = truncated_noise_sample(truncation=truncation, batch_size=1)
+
+    # All in tensors
+    noise_vector = torch.from_numpy(noise_vector)
+    class_vector = torch.from_numpy(class_vector)
+
+    # If you have a GPU, put everything on cuda
+    noise_vector = noise_vector.to('cuda')
+    class_vector = class_vector.to('cuda')
+    model.to('cuda')
+
+    # Generate an image
+    with torch.no_grad():
+        output = model(noise_vector, class_vector, truncation)
+
+    # If you have a GPU put back on CPU
+    output = output.to('cpu')
+
+    output = output.numpy()
+    output = np.reshape(output, (3, 512, 512))
+
+    xmax, xmin = output.max(), output.min()
+    normalized_output = (output - xmin) / (xmax - xmin)
+
+    imgs = tf.keras.preprocessing.image.array_to_img(normalized_output, data_format="channels_first", scale=True)
+
+    buffered = BytesIO()
+    imgs.save(buffered, format="JPEG")
+    img_str = base64.b64encode(buffered.getvalue())
+    return img_str
