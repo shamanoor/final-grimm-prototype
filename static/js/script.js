@@ -85,7 +85,9 @@ $(document).ready(function() {
 
         // store content of container
         prompt = $('#container').html();
-        console.log(prompt)
+        title = $('#story-title').html();
+        console.log("prompt: ", prompt);
+        console.log("story title: ", title);
 
         // HERE PUT PROMT AS ARGUMENT AND CALL FUNCTION main()
         $.ajax({
@@ -93,7 +95,7 @@ $(document).ready(function() {
             contentType: "application/json;charset=utf-8",
             url: "/pdf",
             traditional: "true",
-            data: JSON.stringify(prompt),
+            data: JSON.stringify({"prompt": prompt, "title": title}),
             dataType: "json",
             complete: function(response) {
                   const a = document.createElement("a");
@@ -223,16 +225,7 @@ var img_names = ['tench.jpg', 'goldfish.jpg', 'great_white_shark.jpg', 'tiger_sh
 $(document).ready(function() {
     var idx = 0;
     for (i = 0; i < 999; i++) {
-        console.log(i);
         imgdiv = '<div class="col-2 md-2" id="gallery"> <img style="width: 10%    height: 100%;" src="img/examples/' + img_names[i] +  '"/> ' + availableTags[i] + '</br></br> </div>';
         $('#extend').append(imgdiv);
-//        if (i%5 == 0 && i >0) {
-//            for (j=0; j<5; j++){
-//                console.log("idx: ", idx);
-//                divToAppend =  '<div class="col-2">' + availableTags[idx] + '</div>';
-//                $('#extend').append(divToAppend);
-//                idx +=1;
-//            }
-//        }
     }
 });
