@@ -194,7 +194,11 @@ def get_txt_indices(start_img, end_img, content):
 
 @app.route("/pdf", methods=["post"])
 def main():
-    content = request.get_json()
+    response = request.get_json()
+
+    content = response['prompt']
+    story_title = response['title']
+    print("story_title: ", story_title)
 
     start_img, end_img = get_img_indices(content)
     txt_indices = get_txt_indices(start_img, end_img, content)
@@ -222,13 +226,13 @@ def main():
 
     coverimg = '<img src="https://api.deepai.org/job-view-file/f11fafd9-011a-4b38-95d2-24e78c8ac89c/outputs/output.jpg">'
     #response = generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg)
-    response = make_response(generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg))
+    response = make_response(generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg, story_title))
     response.headers['Content-Disposition'] = "attachment; filename='test2.pdf"
     response.mimetype = 'application/pdf'
     return response
 
 
-def generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg):
+def generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg, story_title):
     reportlab.rl_config.warnOnMissingFontGlyphs = 0
 
     pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
@@ -252,17 +256,19 @@ def generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg):
     ]
 
     # story frontpage
-    paragraph = Paragraph("<b>Generated Stories</b>" + 15 * '<br/>', title)
+    paragraph = Paragraph(15 * '<br/>' + "<b>Generated Stories</b>" + 15 * '<br/>', title)
     story.append(paragraph)
 
-    img = coverimg
-
-    image_url_idx = [m.start() for m in re.finditer('"', img)]
-    url_mainpage = img[image_url_idx[0] + 1: image_url_idx[1]]
-    img = reportlab_image(url_mainpage, width=3 * inch, height=3 * inch)
-
-    story.append(img)
+    # img = coverimg
+    #
+    # image_url_idx = [m.start() for m in re.finditer('"', img)]
+    # url_mainpage = img[image_url_idx[0] + 1: image_url_idx[1]]
+    # img = reportlab_image(url_mainpage, width=3 * inch, height=3 * inch)
+    #
+    # story.append(img)
     story.append(PageBreak())
+
+    story.append(Paragraph("<b>"+story_title+"</b>" + 5*"<br/>", header))
 
     # get list with pos of imgs, pos of txts
     # it will indicate the order, the file does not necessarily contain an img or a txt
@@ -338,6 +344,7 @@ def generate_image():
 
     keyword = request.get_json()
     keyword = keyword['keyword']
+    keyword = keyword.strip()
     # Load pre-trained model tokenizer (vocabulary)
     model = BigGAN.from_pretrained('biggan-deep-512')
 
