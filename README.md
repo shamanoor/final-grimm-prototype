@@ -8,7 +8,7 @@ How to use this project:
 4. Install requirements: pip install -r requirements.txt
 5. Go to project terminal and enter the following two arguments:
 
-set FLASK_APP=grimm_writer.py
-flask run --host=127.0.0.1 --port=5000
+- set FLASK_APP=grimm_writer.py
+- flask run --host=127.0.0.1 --port=5000
 
 Then you should be able to visit the webapp at http://127.0.0.1:5000/static/conditional.html
