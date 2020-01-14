@@ -202,7 +202,14 @@ def main():
 
     content = response['prompt']
     story_title = response['title']
+
     print("story_title: ", story_title)
+    if story_title == "[Click to add story name]":
+        pass
+    elif len(story_title) > 0:
+        story_title = story_title[:-4]
+    else:
+        story_title = ' '
 
     start_img, end_img = get_img_indices(content)
     txt_indices = get_txt_indices(start_img, end_img, content)
@@ -271,7 +278,7 @@ def generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg, story_t
     #
     # story.append(img)
     story.append(PageBreak())
-
+    print("story_title: ", story_title)
     story.append(Paragraph("<b>"+story_title+"</b>" + 5*"<br/>", header))
 
     # get list with pos of imgs, pos of txts
