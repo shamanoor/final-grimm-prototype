@@ -45,3 +45,8 @@ img {
     width: 180px;
     height: 200px;
 }
+
+.homepage-link a {
+    text-decoration: none;
+    color: white;
+}
