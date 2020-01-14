@@ -204,12 +204,8 @@ def main():
     story_title = response['title']
 
     print("story_title: ", story_title)
-    if story_title == "[Click to add story name]":
-        pass
-    elif len(story_title) > 0:
-        story_title = story_title[:-4]
-    else:
-        story_title = ' '
+    if '<br>' in story_title:
+        story_title = story_title.replace('<br>', '')
 
     start_img, end_img = get_img_indices(content)
     txt_indices = get_txt_indices(start_img, end_img, content)
