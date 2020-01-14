@@ -365,7 +365,6 @@ from PIL import Image
 
 @app.route("/generate_image", methods=["post"])
 def generate_image():
-
     keyword = request.get_json()
     keyword = keyword['keyword']
     keyword = keyword.strip()
@@ -382,16 +381,16 @@ def generate_image():
     class_vector = torch.from_numpy(class_vector)
 
     # If you have a GPU, put everything on cuda
-    noise_vector = noise_vector.to('cuda')
-    class_vector = class_vector.to('cuda')
-    model.to('cuda')
+    # noise_vector = noise_vector.to('cuda')
+    # class_vector = class_vector.to('cuda')
+    # model.to('cuda')
 
     # Generate an image
     with torch.no_grad():
         output = model(noise_vector, class_vector, truncation)
 
     # If you have a GPU put back on CPU
-    output = output.to('cpu')
+    # output = output.to('cpu')
 
     output = output.numpy()
     output = np.reshape(output, (3, 512, 512))
@@ -404,4 +403,5 @@ def generate_image():
     buffered = BytesIO()
     imgs.save(buffered, format="JPEG")
     img_str = base64.b64encode(buffered.getvalue())
+
     return img_str
