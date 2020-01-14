@@ -1,8 +1,5 @@
-console.log("heyyyy ;)");
-
 $(document).ready(function() {
     $("#complete-button").click(function(event) {
-        console.log("je hebt geklikt op complete button schat");
         prompt = document.getElementById("prompt").value;
         console.log(prompt)
         response = $.ajax({
@@ -31,7 +28,6 @@ $(document).ready(function() {
     $("#append2-img").click(function () {
         var MyDiv1 = document.getElementById('tti');
         img = MyDiv1.innerHTML;
-        console.log("hi append2-img hi", img);
         $("#container").append(img);
     });
 });
@@ -78,18 +74,10 @@ $(document).ready(function() {
 // export to pdf
 $(document).ready(function() {
     $('#exportpdf').click(function() {
-        console.log("yooo exportpdf let's gooo")
-        // use ajax?
-        // step 1. call generate_novel.py
-        // step 2. return generated pdf
 
-        // store content of container
         prompt = $('#container').html();
         title = $('#story-title').html();
-        console.log("prompt: ", prompt);
-        console.log("story title: ", title);
 
-        // HERE PUT PROMT AS ARGUMENT AND CALL FUNCTION main()
         $.ajax({
             type: "POST",
             contentType: "application/json;charset=utf-8",
@@ -121,14 +109,11 @@ $(document).ready(function() {
     });
 });
 
-
 function WriteData(prompt, response) {
     document.getElementById("prd1.1-prediction").textContent = prompt + JSON.parse(response.responseText).text;
 }
 
-
 function GeneratePhoto() {
-    console.log("try to get locally generated image into html");
     $("#tti").empty();
     keyword = document.getElementById("search_tti").value;
     console.log(keyword)
@@ -225,7 +210,7 @@ var img_names = ['tench.jpg', 'goldfish.jpg', 'great_white_shark.jpg', 'tiger_sh
 $(document).ready(function() {
     var idx = 0;
     for (i = 0; i < 999; i++) {
-        imgdiv = '<div class="col-2 md-2" id="gallery"> <img style="width: 10%    height: 100%;" src="img/examples/' + img_names[i] +  '"/> ' + availableTags[i] + '</br></br> </div>';
+        imgdiv = '<div class="example-img" id="gallery"> <img style="width: 150px;    height: 150px; display: block;" src="img/examples/' + img_names[i] +  '"/> ' + availableTags[i] + '</br></br> </div>';
         $('#extend').append(imgdiv);
     }
 });
