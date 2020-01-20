@@ -4,7 +4,12 @@ import os
 import numpy as np
 import tensorflow as tf
 import model, sample, encoder
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, make_response
+import torch
+from pytorch_pretrained_biggan import (BigGAN, one_hot_from_names, truncated_noise_sample)
+import base64
+import create_pdf
+
 
 # USAGE via CLI:
 # set FLASK_APP=grimm_writer.py
@@ -12,23 +17,7 @@ from flask import Flask, request, jsonify, make_response
 # visit http://127.0.0.1:5000/static/generate-story.html
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 app =Flask(__name__)
-@app.route("/predict", methods=["post", "get"])
-
-# TODO CHANGE NAME OF METHOD
-# also, probably don't need this, but anyway it took a while to learn how to send data from js to python
-# so I'd like to keep it in for now. Sorry for the mess xxx
-def predict():
-    conditional = request.get_json()
-    print("content of conditional: ", conditional)
-    print("another thing xoxo")
-
-    return " "
-
-@app.route("/write_cond", methods=["post"])
-def write_cond():
-    return ""
 
 @app.route("/get_prompt", methods=["get", "post"])
 def get_prompt():
@@ -100,12 +89,8 @@ def interact_model(
         saver.restore(sess, ckpt)
 
         while True:
-            # GET RAW TEXT FROM JS!!!!!!!!!!
             print("raw_text: ", raw_text)
 
-            # while not raw_text:
-            #     print('Prompt should not be empty!')
-            #     raw_text = input("Model prompt >>> ")
             context_tokens = enc.encode(raw_text['unconditional'])
             generated = 0
             for _ in range(nsamples // batch_size):
@@ -124,77 +109,6 @@ def interact_model(
 
                     return response
 
-########################################################################################################################
-########################################################################################################################
-##################################### EVERYTHING FOR REPORTLAB IS UNDER THIS LINE ######################################
-########################################################################################################################
-########################################################################################################################
-
-import re
-import reportlab.rl_config
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.pdfmetrics import registerFontFamily
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.platypus.flowables import DocAssign, Image, PageBreak
-from reportlab.platypus.flowables import Image as reportlab_image
-
-
-def get_img_indices(content):
-    start_img = [m.start() for m in re.finditer('<', content)]
-    end_img = [m.end() for m in re.finditer('>', content)]
-    print("start_img: ", start_img)
-    print("end_img: ", end_img)
-
-    return start_img, end_img
-
-def get_txt_indices(start_img, end_img, content):
-    # ALLOW TO START WITH EITHER IMAGE OR TEXT
-    # FOR EVERY IMAGE THAT IS MORE THAN THE NUMBER OF PARAGRAPHS OF TEXT PRESENT, THIS APPENDS THE EMPTY STRING
-    # TO THE FINAL TXT INDICES AT THE END OF THE SCRIPT
-
-    # NOW FIGURE OUT HOW TO ALLOW BOTH TEXT AND IMAGE TO APPEAR AT THE END OF THE PDF
-    # NEEDED: CHECK IF THERE IS A CHARACTER AFTER LAST END_IMG, AND IF SO, IT WILL BE TEXT.
-
-    num_images = len(start_img)
-
-    txt_indices = []
-    if len(start_img) > 0:
-        imgfirst = start_img[0] == 0
-    else:
-        imgfirst = False
-    imglast = content[-3:] == '=/>'
-
-    print("imglast: ", imglast)
-
-    if imgfirst:
-        for i in range(1, num_images):
-            if (start_img[i] == 0):
-                start_txt = end_img[0]
-                end_txt = start_img[1]
-            else:
-                start_txt = end_img[i - 1]
-                end_txt = start_img[i]
-            txt_indices.append([start_txt, end_txt])
-    else:
-        for i in range(num_images):
-            if (i == 0):
-                start_txt = 0
-            else:
-                start_txt = end_img[i - 1]
-            end_txt = start_img[i]
-            txt_indices.append([start_txt, end_txt])
-
-    if not imglast:
-        if num_images > 0:
-            start_txt = end_img[num_images - 1]
-        else:
-            start_txt = 0
-        txt_indices.append([start_txt, None])
-
-    return txt_indices
 
 @app.route("/pdf", methods=["post"])
 def main():
@@ -203,15 +117,13 @@ def main():
     content = response['prompt']
     story_title = response['title']
 
-    print("story_title: ", story_title)
     if '<br>' in story_title:
         story_title = story_title.replace('<br>', '')
 
-    start_img, end_img = get_img_indices(content)
-    txt_indices = get_txt_indices(start_img, end_img, content)
+    start_img, end_img = create_pdf.get_img_indices(content)
+    txt_indices = create_pdf.get_txt_indices(start_img, end_img, content)
 
     # temporary test of empty line at start of file
-    print("type of content: ", type(content))
     content = content.strip()
 
     imgs = []
@@ -231,140 +143,11 @@ def main():
         elif not i < len(start_img) and i < len(txt_indices):
             txts.append(content[txt_indices[i][0]:txt_indices[i][1]])
 
-    coverimg = '<img src="https://api.deepai.org/job-view-file/f11fafd9-011a-4b38-95d2-24e78c8ac89c/outputs/output.jpg">'
-    #response = generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg)
-    response = make_response(generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg, story_title))
+    response = make_response(create_pdf.generate_pdf_from_list(txt_indices, start_img, txts, imgs, story_title))
     response.headers['Content-Disposition'] = "attachment; filename='test2.pdf"
     response.mimetype = 'application/pdf'
     return response
 
-
-def generate_pdf_from_list(txt_indices, start_img, txts, imgs, coverimg, story_title):
-    reportlab.rl_config.warnOnMissingFontGlyphs = 0
-
-    pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
-    pdfmetrics.registerFont(TTFont('VeraBd', 'VeraBd.ttf'))
-    pdfmetrics.registerFont(TTFont('VeraIt', 'VeraIt.ttf'))
-    pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf'))
-
-    registerFontFamily('Vera', normal='Vera', bold='VeraBd', italic='VeraIt', boldItalic='VeraBI')
-
-    normal = ParagraphStyle(name="Normal", fontName="Helvetica", fontSize=12, leading=11)
-    title = ParagraphStyle(name="Title", fontName="Helvetica", fontSize=42, leftIndent=50)
-    header = ParagraphStyle(name='Header', fontName="Helvetica", fontSize=18, leading=11)
-
-    # def generate_pdf_from_list(list):
-    story = [
-        DocAssign("currentFrame", "doc.frame.id"),
-        DocAssign("currentPageTemplate", "doc.pageTemplate.id"),
-        DocAssign("aW", "availableWidth"),
-        DocAssign("aH", "availableHeight"),
-        DocAssign("aWH", "availableWidth,availableHeight")
-    ]
-
-    # story frontpage
-    paragraph = Paragraph(15 * '<br/>' + "<b>Generated Stories</b>" + 15 * '<br/>', title)
-    story.append(paragraph)
-
-    # img = coverimg
-    #
-    # image_url_idx = [m.start() for m in re.finditer('"', img)]
-    # url_mainpage = img[image_url_idx[0] + 1: image_url_idx[1]]
-    # img = reportlab_image(url_mainpage, width=3 * inch, height=3 * inch)
-    #
-    # story.append(img)
-    story.append(PageBreak())
-    print("story_title: ", story_title)
-    story.append(Paragraph("<b>"+story_title+"</b>" + 5*"<br/>", header))
-
-    # get list with pos of imgs, pos of txts
-    # it will indicate the order, the file does not necessarily contain an img or a txt
-    # so only create object and append to story if it actually exists
-    for i in range(max(len(txt_indices), len(imgs))):
-
-        if i < len(txt_indices):
-            idx_text = txt_indices[i][0]
-            text = txts[i]
-            lasttext = False
-            # if i + 1 >= len(txt_indices):
-            #     lasttext = True
-        else:
-            lasttext = True
-
-        print("lasttext: ", lasttext)
-
-        if i < len(imgs):
-            idx_img = start_img[i]
-            img = imgs[i]
-            # print("img: ", img)
-            image_url_idx = [m.start() for m in re.finditer('"', img)]
-            url = img[image_url_idx[0] + 1: image_url_idx[1]]
-            # print("url: ", url)
-            print("i: ", i)
-            print("imgs: ", imgs)
-            print("txt_indices: ", txt_indices)
-            print("len(imgs): ", len(imgs))
-            print("len(txt_indices): ", len(txt_indices))
-            img = reportlab_image(url, width=3 * inch, height=3 * inch)
-            lastimg = False
-        else:
-            lastimg = True
-
-        print("lastimg: ", lastimg)
-
-        # in case both are not empty:
-        if not lastimg and not lasttext:
-            if idx_text < idx_img:
-                # begin story
-                story.append(Paragraph(text, normal))
-                story.append(Spacer(1, 0.25 * inch))
-                story.append(img)
-                story.append(Spacer(1, 0.25 * inch))
-
-            # in case img before text:
-            if idx_text > idx_img:
-                # begin story
-                story.append(img)
-                story.append(Spacer(1, 0.25 * inch))
-                story.append(Paragraph(text, normal))
-                story.append(Spacer(1, 0.25 * inch))
-
-            if idx_text == idx_img:
-                story.append(img)
-                story.append(Spacer(1, 0.25 * inch))
-
-        # in case last image (has already been added)
-        if lastimg and not lasttext:
-            print("text: ", text)
-            story.append(Paragraph(text, normal))
-            story.append(Spacer(1, 0.25 * inch))
-
-        if lasttext and not lastimg:
-            print("lasttext and not lastimg")
-            story.append(img)
-            story.append(Spacer(1, 0.25 * inch))
-
-    buff = BytesIO()
-
-    doc = SimpleDocTemplate(buff)
-    doc.build(story)
-
-    return buff.getvalue()
-
-########################################################################################################################
-########################################################################################################################
-############################################ EVERYTHING FOR TF BIGGAN HUB ##### ########################################
-########################################################################################################################
-########################################################################################################################
-
-import torch
-from pytorch_pretrained_biggan import (BigGAN, one_hot_from_names, truncated_noise_sample,
-                                       save_as_images)
-import base64
-from io import BytesIO
-
-# OPTIONAL: if you want to have more information on what's happening, activate the logger as follows
-from PIL import Image
 
 @app.route("/generate_image", methods=["post"])
 def generate_image():
@@ -383,17 +166,9 @@ def generate_image():
     noise_vector = torch.from_numpy(noise_vector)
     class_vector = torch.from_numpy(class_vector)
 
-    # If you have a GPU, put everything on cuda
-    # noise_vector = noise_vector.to('cuda')
-    # class_vector = class_vector.to('cuda')
-    # model.to('cuda')
-
     # Generate an image
     with torch.no_grad():
         output = model(noise_vector, class_vector, truncation)
-
-    # If you have a GPU put back on CPU
-    # output = output.to('cpu')
 
     output = output.numpy()
     output = np.reshape(output, (3, 512, 512))
