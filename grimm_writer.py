@@ -9,7 +9,7 @@ from flask import Flask, request, jsonify, make_response
 # USAGE via CLI:
 # set FLASK_APP=grimm_writer.py
 # flask run --host=127.0.0.1 --port=5000
-# visit http://127.0.0.1:5000/static/conditional.html
+# visit http://127.0.0.1:5000/static/generate-story.html
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
