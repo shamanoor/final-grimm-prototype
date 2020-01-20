@@ -10,6 +10,29 @@ from pytorch_pretrained_biggan import (BigGAN, one_hot_from_names, truncated_noi
 import base64
 import create_pdf
 
+import style_transfer as st
+
+from easydict import EasyDict as edict
+
+
+opt = edict({'dataroot': '.\datasets', 'name': 'pretrained',
+             'gpu_ids': '-1', 'checkpoints_dir' : './checkpoints',
+             'model':'test', 'input_nc':3, 'output_nc':3, 'ngf':64, 'ndf':64,
+             'netD':'basic', 'netG':'resnet_9blocks', 'n_layers_D':3, 'norm':'instance', 'init_type':'normal',
+             'init_gain':0.02, 'no_dropout':True, 'dataset_mode':'single',
+
+             'direction':'AtoB', 'serial_batches':False,
+             'num_threads':0, 'batch_size':1,
+             'load_size':256, 'crop_size':256,
+             'max_dataset_size':float('inf'), 'preprocess':'resize_and_crop',
+             'no_flip':False, 'display_winsize':256, 'epoch':'latest',
+             'load_iter':0, 'verbose':True, 'suffix':"",
+             'ntest':float('inf'), 'results_dir':'./results/',
+             'aspect_ratio':1.0, 'phase':'test', 'eval':False,
+             'num_test':50, 'model_suffix':'', 'isTrain': False, 'continue_train': True})
+
+
+opt.gpu_ids = []
 
 # USAGE via CLI:
 # set FLASK_APP=grimm_writer.py
@@ -175,6 +198,19 @@ def generate_image():
 
     xmax, xmin = output.max(), output.min()
     normalized_output = (output - xmin) / (xmax - xmin)
+
+    #  Comment the next 4 lines of code to remove style transfer
+    ###################################
+
+    normalized_output *= 255.0 / normalized_output.max()
+    normalized_output = normalized_output.astype('int8')
+
+    normalized_output = np.rollaxis(normalized_output, 0, 3)
+
+    normalized_output = st.illustrate(normalized_output, opt)
+
+    ######################################
+
 
     imgs = tf.keras.preprocessing.image.array_to_img(normalized_output, data_format="channels_first", scale=True)
 
