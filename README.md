@@ -15,6 +15,6 @@ How to use this project:
 - set FLASK_APP=grimm_writer.py
 - flask run --host=127.0.0.1 --port=5000
 
-Then you should be able to visit the webapp at http://127.0.0.1:5000/static/generate-story.html
+Then you should be able to visit the webapp at [http://127.0.0.1:5000/static/generate-story.html](http://127.0.0.1:5000/static/generate-story.html)
 
 If not, close the connection and repeat steps 5 and 6.
