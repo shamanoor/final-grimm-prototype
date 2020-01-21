@@ -1,7 +1,11 @@
 $(document).ready(function() {
     $("#complete-button").click(function(event) {
+        // empty prediction div
+        document.getElementById("prd1.1-prediction").innerHTML = '';
+
         var loader = document.createElement("DIV");
         loader.className = "loader";
+        // append loader
         document.getElementById("prd1.1-prediction").appendChild(loader);
 
         prompt = document.getElementById("prompt").value;
@@ -14,7 +18,6 @@ $(document).ready(function() {
             data: JSON.stringify({"unconditional" : prompt}),
             dataType: "json",
             complete: function(response) {
-                $("#prd1.1-prediction").empty();
                 WriteData(prompt, response);
             }
         });
