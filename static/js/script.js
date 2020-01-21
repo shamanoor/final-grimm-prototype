@@ -1,5 +1,9 @@
 $(document).ready(function() {
     $("#complete-button").click(function(event) {
+        var loader = document.createElement("DIV");
+        loader.className = "loader";
+        document.getElementById("prd1.1-prediction").appendChild(loader);
+
         prompt = document.getElementById("prompt").value;
         console.log(prompt)
         response = $.ajax({
@@ -10,6 +14,7 @@ $(document).ready(function() {
             data: JSON.stringify({"unconditional" : prompt}),
             dataType: "json",
             complete: function(response) {
+                $("#prd1.1-prediction").empty();
                 WriteData(prompt, response);
             }
         });
@@ -115,6 +120,12 @@ function WriteData(prompt, response) {
 
 function GeneratePhoto() {
     $("#tti").empty();
+
+    // show loading wheel
+    var loader = document.createElement("DIV");
+    loader.className = "loader";
+    document.getElementById("tti").appendChild(loader);
+
     keyword = document.getElementById("search_tti").value;
     console.log(keyword)
     response = $.ajax({
@@ -125,6 +136,8 @@ function GeneratePhoto() {
         data: JSON.stringify({"keyword" : keyword}),
         dataType: "json",
         complete: function(response) {
+            // remove loading wheel
+            $("#tti").empty();
             if (response.status == 200) {
                 console.log(response)
                 src = response.responseText;
