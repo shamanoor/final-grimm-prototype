@@ -72,7 +72,7 @@ def print_networks(self, verbose):
 def illustrate(img, opt):
     # get test options
 
-    torch.cuda.set_device(opt.gpu_ids[0])
+    # torch.cuda.set_device(opt.gpu_ids[0])
     model = TestModel(opt)
     model.setup(opt)
     # hard-code some parameters for test
