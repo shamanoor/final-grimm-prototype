@@ -7,6 +7,8 @@ certifi==2019.9.11
 chardet==3.0.4
 Click==7.0
 docutils==0.15.2
+dominate==2.4.0
+easydict==1.9
 fire==0.2.1
 Flask==1.1.1
 gast==0.2.2
@@ -62,4 +64,5 @@ torchvision==0.4.2
 tqdm==4.40.2
 urllib3==1.25.6
 Werkzeug==0.16.0
+wincertstore==0.2
 wrapt==1.11.2
