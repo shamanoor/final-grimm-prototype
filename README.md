@@ -18,3 +18,7 @@ How to use this project:
 Then you should be able to visit the webapp at [http://127.0.0.1:5000/static/generate-story.html](http://127.0.0.1:5000/static/generate-story.html)
 
 If not, close the connection and repeat steps 5 and 6.
+
+
+
+To visualize what is happening inside the model you can open the visualization folder and follow instructions there.
