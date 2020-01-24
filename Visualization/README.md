@@ -1,1 +1,2 @@
-Click on the google colab button inside the notebook file and run the cells to visualize the attention weights of the model on a user input text.
+To visualize the attention weights:
+Open the file --> click on colab button inside file --> run cells
