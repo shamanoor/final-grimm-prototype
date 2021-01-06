@@ -22,3 +22,5 @@ If not, close the connection and repeat steps 5 and 6.
 
 
 To visualize what is happening inside the model you can open the visualization notebook and run it.
+
+The demo video can be found [here](https://youtu.be/n2YHi6zF-oo)
