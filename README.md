@@ -5,7 +5,7 @@ How to use this project:
 1. Download the zip
 2. Download these additional files 
     - download 'model-2160.data-00000-of-00001' located [here](https://drive.google.com/open?id=1aGDPRUH368N-R_Jd3t2ziDrbCjf5X5WK) and add it to the ./models/Grimm folder.
-    - download 'latest_net_G.pth' file located [here](https://drive.google.com/file/d/13VaFc6bBIjVy-JNbcCtuVTt37p-n2VLb/view?usp=sharing)  and add it to the ./checkpoints/pretrained folder.
+    - download 'latest_net_G.pth' file located [here](https://drive.google.com/file/d/1QyV--8vh9f5fi0VUcZU074m9FidB1CAC/view?usp=sharing)  and add it to the ./checkpoints/pretrained folder.
 3. Install pytorch using:
 - pip install torch===1.3.1 torchvision===0.4.2 -f https://download.pytorch.org/whl/torch_stable.html
 4. Install requirements: pip install -r requirements.txt
