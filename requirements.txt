@@ -33,7 +33,7 @@ numpy==1.17.3
 oauthlib==3.1.0
 opt-einsum==3.1.0
 ParallelDots==3.2.13
-Pillow==6.2.0
+Pillow==8.1.1
 protobuf==3.10.0
 psutil==5.6.7
 public==2019.4.13
