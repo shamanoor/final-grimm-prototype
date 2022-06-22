@@ -29,7 +29,7 @@ Markdown==3.1.1
 MarkupSafe==1.1.1
 mock==3.0.5
 nltk==3.4.5
-numpy==1.17.3
+numpy==1.22.0
 oauthlib==3.1.0
 opt-einsum==3.1.0
 ParallelDots==3.2.13
